@@ -34,19 +34,19 @@ std::string Player::ToRelativePosition(Position other)
 {
     if (pos_.row > other.row)
     {
-        return "up";
+        return "UP";
     }
     else if (pos_.row < other.row)
     {
-        return "down";
+        return "DOWN";
     }
     else if (pos_.col > other.col)
     {
-        return "left";
+        return "LEFT";
     }
     else if (pos_.col < other.col)
     {
-        return "right";
+        return "RIGHT";
     }
     else
     {
