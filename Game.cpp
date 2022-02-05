@@ -305,7 +305,6 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
             SetSquareValue(p->get_position(), SquareType::Empty);
             SetSquareValue(pos, SquareType::Pacman);
             p->set_position(pos);
-            p->change_points(-1);
             p->set_is_dead(true);
             return true;
         }
@@ -338,17 +337,22 @@ bool Board::MoveEnemy(Player *p, Position pos)
 {
     if (get_square_value(pos) == SquareType::Pacman)
     {
+        p->set_enemy_prev_type(SquareTypeStringify((get_square_value(pos)))[0]);
+        SetSquareValue(pos, get_square_value(p->get_position()));
+        SetSquareValue(p->get_position(), GetSquareType(p->get_enemy_prev_type()));
+        p->set_position(pos);
     }
-    else if (get_square_value(pos) == SquareType::PowerfulPacman)
-    {
-    }
+    // else if (get_square_value(pos) == SquareType::PowerfulPacman)
+    // {
+    //     SetSquareValue(pos, get_square_value(p->get_position()));
+    //     p->set_is_dead(true);
+    // }
     else
     {
         p->set_enemy_prev_type(SquareTypeStringify((get_square_value(pos)))[0]);
         SetSquareValue(pos, get_square_value(p->get_position()));
         SetSquareValue(p->get_position(), GetSquareType(p->get_enemy_prev_type()));
         p->set_position(pos);
-        p->change_points(1);
         return true;
     }
 }
@@ -379,16 +383,74 @@ void Board::PrettyPrint(Player *p)
 void Game::PrettyPrint()
 {
     board_->PrettyPrint(players_[0]);
-    std::cout << "Turns: " << turn_count_ << '\n'
-              << '\n';
-    // std:: cout << "Dots remaining: " << get_dots_count() << '\n' << '\n';
+    std::cout << "Turns: " << turn_count_ << '\n';
+    std::cout << "Dots remaining: " << get_dots_count(board_) << '\n';
+    std::cout << "Treasure remaining: " << get_treasures_count(board_) << '\n';        
 }
 
 Game::Game()
 {
     turn_count_ = 0;
     board_ = new Board();
+    dots_count_ = get_dots_count(board_);
 }
+
+bool Game::CheckIfDotsOver()
+{
+    if (get_dots_count(board_) == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+bool Game::CheckIfTreasuresOver(){
+    if (get_treasures_count(board_) == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+int Game::get_dots_count(Board *board)
+{
+    int count = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            if (board->get_square_value({i, j}) == SquareType::Dots)
+            {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+int Game::get_treasures_count(Board *board)
+{
+    int count = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            if (board->get_square_value({i, j}) == SquareType::Treasure)
+            {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+
 
 void Game::NewGame(Player *human, std::vector<Player *> enemylist, const int enemies)
 {
@@ -472,20 +534,17 @@ void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
 }
 
 void Game::TakeTurnEnemy(Player *p)
-{
+{   
     std::vector<Position> moves = board_->GetMoves(p);
     int rand_move = rand() % moves.size();
-    board_->MoveEnemy(p, moves[rand_move]);
-    for (long unsigned int i = 0; i < moves.size(); i++)
+    while (board_->get_square_value(moves[rand_move]) == SquareType::PowerfulPacman)
     {
-        std::cout << players_[0]->ToRelativePosition(moves[i]) << " ";
+        rand_move = rand() % moves.size();
     }
-    std::cout << '\n';
+    board_->MoveEnemy(p, moves[rand_move]);
 }
 
 bool Game::IsGameOver(Player *p)
 {
-    return p->is_dead();
+    return p->is_dead() || (CheckIfDotsOver() && CheckIfTreasuresOver());
 }
-// bool Game::CheckifdotsOver(){}
-// std::string Game::GenerateReport(Player *p){}

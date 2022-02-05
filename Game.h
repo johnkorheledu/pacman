@@ -45,12 +45,14 @@ class Game
 {
 public:
 	Game();
-	int get_dots_count() const { dots_count_;}
+	int get_dots_count(Board *b);
+	int get_treasures_count(Board *b);
 	void NewGame(Player *human, std::vector<Player *> enemylist, const int enemies);
 	void TakeTurn(Player *p, std::vector<Player *> enemylist);
 	void TakeTurnEnemy(Player *p);
 	bool IsGameOver(Player *p);
 	bool CheckIfDotsOver();
+	bool CheckIfTreasuresOver();
 	std::string GenerateReport(Player *p);
 	void PrettyPrint();
 
@@ -59,6 +61,7 @@ private:
 	std::vector<Player *> players_;
 	int turn_count_;
 	int dots_count_;
+	int treasures_count_;
 	bool game_over_;
 };
 
