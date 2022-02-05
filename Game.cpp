@@ -4,6 +4,7 @@
 
 /**
     Returns the symbol associated with a given SquareType sq
+
     @param sq SquareType to be converted to a string
     @return String representation of the SquareType
 */
@@ -36,6 +37,7 @@ std::string SquareTypeStringify(SquareType sq)
 
 /**
     Returns the SquareType associated with a given char c
+
     @param c char to be converted to a SquareType
     @return SquareType representation of the char
 */
@@ -64,6 +66,7 @@ SquareType GetSquareType(char c)
 
 /**
     Default constructor for the Board class. Constructs a new Board with the constraints in writeup
+
     @return Board object
 */
 Board::Board()
@@ -126,6 +129,7 @@ Board::Board()
 
 /**
     Returns the SquareType of the square at the given position on the board
+
     @param pos Position of the square to be returned
     @return SquareType of the square at the given position
 */
@@ -153,6 +157,7 @@ SquareType Board::GetTreasureOrPellet()
 
 /**
     Sets the SquareType of the square at the given position on the board
+
     @param pos Position of the square to be set
     @param sq SquareType to be set
     @return void
@@ -164,6 +169,7 @@ void Board::SetSquareValue(Position pos, SquareType sq)
 
 /**
     Returns a vector of type Position containing all legal moves for the player at their position
+
     @param p Player pointer
     @return Position Vector of legal moves
 */
@@ -245,6 +251,7 @@ std::vector<Position> Board::GetMoves(Player *p)
 
 /**
     Moves the player to the given position
+
     @param p Player pointer
     @param pos Position to move to
     @param enemylist Vector of enemy player pointers
@@ -281,7 +288,6 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
     {
         if (p->has_treasure())
         {
-            // iterate through enemy list and find the enemy at the given position
             for (int i = 0; i < enemylist.size(); i++)
             {
                 if (enemylist[i]->get_position() == pos)
@@ -325,6 +331,7 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
 
 /**
     Generates a report after the game is over
+
     @param p Player pointer
     @return std::string Report of the game
 */
@@ -338,6 +345,7 @@ std::string Game::GenerateReport(Player *p)
 
 /**
     Moves an enemy to the given position
+
     @param p Enemy Player pointer
     @param pos Position to move to
     @return bool True if move was successful, false if move was not successful
@@ -363,6 +371,7 @@ bool Board::MoveEnemy(Player *p, Position pos)
 
 /**
     Prints the board to the console in a readable format
+
     @param p Player pointer
     @return void
 */
@@ -381,6 +390,7 @@ void Board::PrettyPrint(Player *p)
 
 /**
     Prints game specific information to the console in a readable format
+
     @return void
 */
 void Game::PrettyPrint()
@@ -393,6 +403,7 @@ void Game::PrettyPrint()
 
 /**
     Prints game specific information to the console in a readable format
+
     @return void
 */
 Game::Game()
@@ -404,6 +415,7 @@ Game::Game()
 
 /**
     Checks if there are dots remaining on the board
+
     @return True if there are no more dots on the board, false if there are still dots on the board
 */
 bool Game::CheckIfDotsOver()
@@ -420,6 +432,7 @@ bool Game::CheckIfDotsOver()
 
 /**
     Checks if there are treasures remaining on the board
+
     @return True if there are still treasures on the board, false if there are no more treasures on the board
 */
 bool Game::CheckIfTreasuresOver()
@@ -436,6 +449,7 @@ bool Game::CheckIfTreasuresOver()
 
 /**
     Get the number of dots remaining on the board
+
     @param board Board pointer
     @return Number of dots remaining on the board
 */
@@ -457,6 +471,7 @@ int Game::get_dots_count(Board *board)
 
 /**
     Get the number of treasures remaining on the board
+
     @param board Board pointer
     @return Number of treasures remaining on the board
 */
@@ -478,6 +493,7 @@ int Game::get_treasures_count(Board *board)
 
 /**
     Create a new game
+
     @param human Player pointer
     @param enemylist List of enemy players
     @param enemies Number of enemies
@@ -499,8 +515,6 @@ void Game::NewGame(Player *human, std::vector<Player *> enemylist, const int ene
     while (!IsGameOver(players_[0]))
     {
         TakeTurn(players_[0], enemylist);
-        // TakeTurnEnemy(players_[1]);
-        // TakeTurnEnemy(players_[2]);
         for (long unsigned int i = 0; i < enemylist.size(); i++)
         {
             if (enemylist[i]->is_dead() == false)
@@ -517,6 +531,7 @@ void Game::NewGame(Player *human, std::vector<Player *> enemylist, const int ene
 
 /**
     Takes a turn for a player
+
     @param p Player pointer
     @param enemylist List of enemy players
     @return void
@@ -531,8 +546,6 @@ void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
         std::cout << players_[0]->ToRelativePosition(moves[i]) << " ";
     }
     std::cout << '\n';
-
-    // get user input for move and check if valid (up, right, down, left).
     std::string input;
     std::cout << "Enter move: ";
     std::cin >> input;
@@ -573,6 +586,7 @@ void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
 
 /**
     Takes a turn for an enemy player
+
     @param p Player pointer
     @return void
 */
@@ -589,6 +603,7 @@ void Game::TakeTurnEnemy(Player *p)
 
 /**
     Checks if the game is over
+
     @param p Player pointer
     @return True if the game is over, false if the game is not over
 */
