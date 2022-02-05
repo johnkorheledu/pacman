@@ -9,7 +9,7 @@ Player::Player(const std::string name, const bool is_human)
     has_treasure_ = false;
     treasure_count_ = 0;
     is_dead_ = false;
-    prev_move_type_ = 'Dots';
+    enemy_prev_type_ = '.';
 }
 
 void Player::change_points(const int x)
@@ -17,10 +17,11 @@ void Player::change_points(const int x)
     points_ += x;
 }
 
-void Player::set_prev_move_type(char sq)
+void Player::set_enemy_prev_type(char type)
 {
-    prev_move_type_ = sq;
+    enemy_prev_type_ = type;
 }
+
 void Player::set_position(Position pos)
 {
     pos_ = pos;

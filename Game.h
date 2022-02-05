@@ -45,7 +45,7 @@ class Game
 {
 public:
 	Game();
-
+	int get_dots_count() const { dots_count_;}
 	void NewGame(Player *human, std::vector<Player *> enemylist, const int enemies);
 	void TakeTurn(Player *p, std::vector<Player *> enemylist);
 	void TakeTurnEnemy(Player *p);
