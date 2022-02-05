@@ -34,6 +34,11 @@ std::string SquareTypeStringify(SquareType sq)
     }
 }
 
+/**
+    Returns the SquareType associated with a given char c
+    @param c char to be converted to a SquareType
+    @return SquareType representation of the char
+*/
 SquareType GetSquareType(char c)
 {
     switch (c)
@@ -276,7 +281,7 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
     {
         if (p->has_treasure())
         {
-            //iterate through enemy list and find the enemy at the given position
+            // iterate through enemy list and find the enemy at the given position
             for (int i = 0; i < enemylist.size(); i++)
             {
                 if (enemylist[i]->get_position() == pos)
@@ -299,7 +304,6 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
             }
             return true;
         }
-        // TODO: end the game here
         else
         {
             SetSquareValue(p->get_position(), SquareType::Empty);
@@ -319,6 +323,11 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
     }
 }
 
+/**
+    Generates a report after the game is over
+    @param p Player pointer
+    @return std::string Report of the game
+*/
 std::string Game::GenerateReport(Player *p)
 {
     std::string report = "";
@@ -342,11 +351,6 @@ bool Board::MoveEnemy(Player *p, Position pos)
         SetSquareValue(p->get_position(), GetSquareType(p->get_enemy_prev_type()));
         p->set_position(pos);
     }
-    // else if (get_square_value(pos) == SquareType::PowerfulPacman)
-    // {
-    //     SetSquareValue(pos, get_square_value(p->get_position()));
-    //     p->set_is_dead(true);
-    // }
     else
     {
         p->set_enemy_prev_type(SquareTypeStringify((get_square_value(pos)))[0]);
@@ -372,8 +376,7 @@ void Board::PrettyPrint(Player *p)
         }
         std::cout << std::endl;
     }
-    std::cout << "Points: " << p->get_points() << '\n';
-    std::cout << "Treasure(s): " << p->get_treasure_count() << '\n';
+    std::cout << p->Stringify() << std::endl;
 }
 
 /**
@@ -385,9 +388,13 @@ void Game::PrettyPrint()
     board_->PrettyPrint(players_[0]);
     std::cout << "Turns: " << turn_count_ << '\n';
     std::cout << "Dots remaining: " << get_dots_count(board_) << '\n';
-    std::cout << "Treasure remaining: " << get_treasures_count(board_) << '\n';        
+    std::cout << "Treasure remaining: " << get_treasures_count(board_) << '\n';
 }
 
+/**
+    Prints game specific information to the console in a readable format
+    @return void
+*/
 Game::Game()
 {
     turn_count_ = 0;
@@ -395,6 +402,10 @@ Game::Game()
     dots_count_ = get_dots_count(board_);
 }
 
+/**
+    Checks if there are dots remaining on the board
+    @return True if there are no more dots on the board, false if there are still dots on the board
+*/
 bool Game::CheckIfDotsOver()
 {
     if (get_dots_count(board_) == 0)
@@ -406,7 +417,13 @@ bool Game::CheckIfDotsOver()
         return false;
     }
 }
-bool Game::CheckIfTreasuresOver(){
+
+/**
+    Checks if there are treasures remaining on the board
+    @return True if there are still treasures on the board, false if there are no more treasures on the board
+*/
+bool Game::CheckIfTreasuresOver()
+{
     if (get_treasures_count(board_) == 0)
     {
         return true;
@@ -417,7 +434,11 @@ bool Game::CheckIfTreasuresOver(){
     }
 }
 
-
+/**
+    Get the number of dots remaining on the board
+    @param board Board pointer
+    @return Number of dots remaining on the board
+*/
 int Game::get_dots_count(Board *board)
 {
     int count = 0;
@@ -434,6 +455,11 @@ int Game::get_dots_count(Board *board)
     return count;
 }
 
+/**
+    Get the number of treasures remaining on the board
+    @param board Board pointer
+    @return Number of treasures remaining on the board
+*/
 int Game::get_treasures_count(Board *board)
 {
     int count = 0;
@@ -450,8 +476,13 @@ int Game::get_treasures_count(Board *board)
     return count;
 }
 
-
-
+/**
+    Create a new game
+    @param human Player pointer
+    @param enemylist List of enemy players
+    @param enemies Number of enemies
+    @return void
+*/
 void Game::NewGame(Player *human, std::vector<Player *> enemylist, const int enemies)
 {
     players_.push_back(human);
@@ -483,6 +514,13 @@ void Game::NewGame(Player *human, std::vector<Player *> enemylist, const int ene
     std::cout << "Game Over!\n";
     std::cout << GenerateReport(players_[0]);
 }
+
+/**
+    Takes a turn for a player
+    @param p Player pointer
+    @param enemylist List of enemy players
+    @return void
+*/
 void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
 {
     turn_count_ += 1;
@@ -533,8 +571,13 @@ void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
     }
 }
 
+/**
+    Takes a turn for an enemy player
+    @param p Player pointer
+    @return void
+*/
 void Game::TakeTurnEnemy(Player *p)
-{   
+{
     std::vector<Position> moves = board_->GetMoves(p);
     int rand_move = rand() % moves.size();
     while (board_->get_square_value(moves[rand_move]) == SquareType::PowerfulPacman)
@@ -544,6 +587,11 @@ void Game::TakeTurnEnemy(Player *p)
     board_->MoveEnemy(p, moves[rand_move]);
 }
 
+/**
+    Checks if the game is over
+    @param p Player pointer
+    @return True if the game is over, false if the game is not over
+*/
 bool Game::IsGameOver(Player *p)
 {
     return p->is_dead() || (CheckIfDotsOver() && CheckIfTreasuresOver());

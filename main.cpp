@@ -4,6 +4,7 @@
 
 
 int main() {
+    // Stationary traps was the extra credit component.
     Player human("human", true);
     Player enemy1("enemy1", false);
     Player enemy2("enemy2", false);

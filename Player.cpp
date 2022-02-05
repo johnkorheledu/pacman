@@ -10,6 +10,7 @@ Player::Player(const std::string name, const bool is_human)
     treasure_count_ = 0;
     is_dead_ = false;
     enemy_prev_type_ = '.';
+    treasure_count_ = 0;
 }
 
 void Player::change_points(const int x)
@@ -20,6 +21,12 @@ void Player::change_points(const int x)
 void Player::set_enemy_prev_type(char type)
 {
     enemy_prev_type_ = type;
+}
+
+std::string Player::Stringify()
+{
+    std::string s = name_ + ": " + std::to_string(points_) + " points, " + std::to_string(treasure_count_) + " treasures";
+    return s;
 }
 
 void Player::set_position(Position pos)
@@ -65,10 +72,4 @@ std::string Player::ToRelativePosition(Position other)
 void Player::set_treasure_count(int count)
 {
     treasure_count_ = count;
-}
-
-std::string Player::Stringify()
-{
-    std::string s = name_ + ": " + std::to_string(points_);
-    return s;
 }
