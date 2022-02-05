@@ -24,13 +24,40 @@ std::string SquareTypeStringify(SquareType sq)
     case SquareType::Empty:
         return " _ ";
     case SquareType::PowerfulPacman:
-        return "  ";
+        return " P2 ";
     case SquareType::Trap:
         return "Trap";
     case SquareType::EnemySpecialTreasure:
         return "EnemySpecialTreasure";
     default:
         return "";
+    }
+}
+
+SquareType GetSquareType(char c)
+{
+    switch (c)
+    {
+    case '|':
+        return SquareType::Wall;
+    case '.':
+        return SquareType::Dots;
+    case 'p':
+        return SquareType::Pacman;
+    case 'T':
+        return SquareType::Treasure;
+    case 'e':
+        return SquareType::Enemies;
+    case '_':
+        return SquareType::Empty;
+    case 'P':
+        return SquareType::PowerfulPacman;
+    case 't':
+        return SquareType::Trap;
+    case 'E':
+        return SquareType::EnemySpecialTreasure;
+    default:
+        return SquareType::Empty;
     }
 }
 
@@ -175,33 +202,46 @@ std::vector<Position> Board::GetMoves(Player *p)
 */
 bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
 {
-    if (get_square_value(pos) == SquareType::Dots || get_square_value(pos) == SquareType::Empty)
+    if (get_square_value(pos) == SquareType::Dots)
     {
         SetSquareValue(pos, get_square_value(p->get_position()));
         SetSquareValue(p->get_position(), SquareType::Empty);
-        p->SetPosition(pos);
-        p->ChangePoints(1);
+        p->set_position(pos);
+        p->change_points(1);
+        return true;
+    }
+    else if(get_square_value(pos) == SquareType::Empty){
+        SetSquareValue(pos, get_square_value(p->get_position()));
+        SetSquareValue(p->get_position(), SquareType::Empty);
+        p->set_position(pos);
         return true;
     }
     else if (get_square_value(pos) == SquareType::Treasure)
     {
         SetSquareValue(p->get_position(), SquareType::Empty);
         SetSquareValue(pos, SquareType::PowerfulPacman);
-        p->SetPosition(pos);
-        p->ChangePoints(100);
-        p->SetHasTreasure(true);
+        p->set_position(pos);
+        p->change_points(100);
+        p->set_treasure_count(p->get_treasure_count() + 1);
+        p->set_has_treasure(true);
         return true;
     }
     else if (get_square_value(pos) == SquareType::Enemies)
     {
-        if (p->hasTreasure())
+        if (p->has_treasure())
         {
             SetSquareValue(p->get_position(), SquareType::Empty);
             SetSquareValue(pos, SquareType::Pacman);
-            p->SetPosition(pos);
-            p->ChangePoints(100);
-            //todo fix this
-            p->SetHasTreasure(false);
+            p->set_position(pos);
+            p->change_points(100);
+            p->set_treasure_count(p->get_treasure_count() - 1);
+            if (p->get_treasure_count() == 0)
+            {
+                p->set_has_treasure(false);
+            }
+            else{
+                SetSquareValue(pos, SquareType::PowerfulPacman);
+            }
             return true;
         }
         //TODO: end the game here
@@ -209,9 +249,10 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
         {
             SetSquareValue(p->get_position(), SquareType::Empty);
             SetSquareValue(pos, SquareType::Pacman);
-            p->SetPosition(pos);
-            p->ChangePoints(-1);
+            p->set_position(pos);
+            p->change_points(-1);
             return true;
+            exit(0);
         }
     }
     else if (get_square_value(pos) == SquareType::Wall)
@@ -223,39 +264,42 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
         return false;
     }
 }
-int counter = 0;
-// Move an enemy to a new position on the board. Return true if they moved successfully, false otherwise.
-bool Board::MoveEnemy(Player *p, Position pos)
-{
-    if (get_square_value(p->get_position()) == SquareType::Dots){
+
+/**
+    Moves an enemy to the given position
+    @param p Enemy Player pointer
+    @param pos Position to move to
+    @return bool True if move was successful, false if move was not successful
+*/
+bool Board::MoveEnemy(Player *p, Position pos){
+    
+    
+    // move the enemy
+    if (get_square_value(pos) == SquareType::Dots)
+    {
         SetSquareValue(pos, get_square_value(p->get_position()));
-        SetSquareValue(p->get_position(), SquareType::Dots);
-        p->SetPosition(pos);
+        SetSquareValue(p->get_position(), GetSquareType(p->get_prev_move_type()));
+        p->set_prev_move_type('.');
+        p->set_position(pos);
+        p->change_points(1);
         return true;
     }
-    else if (get_square_value(p->get_position()) == SquareType::Treasure){
+    else if (get_square_value(pos) == SquareType::Empty){
         SetSquareValue(pos, get_square_value(p->get_position()));
-        SetSquareValue(p->get_position(), SquareType::Treasure);
-        p->SetPosition(pos);
+        SetSquareValue(p->get_position(), GetSquareType(p->get_prev_move_type()));
+        p->set_prev_move_type('_');
+        p->set_position(pos);
+        p->change_points(1);
         return true;
     }
-    else if (get_square_value(p->get_position()) == SquareType::Empty){
+    else if (get_square_value(pos) == SquareType::Treasure){
         SetSquareValue(pos, get_square_value(p->get_position()));
-        SetSquareValue(p->get_position(), SquareType::Empty);
-        p->SetPosition(pos);
+        SetSquareValue(p->get_position(), GetSquareType(p->get_prev_move_type()));
+        p->set_prev_move_type('T');
+        p->set_position(pos);
+        p->change_points(1);
         return true;
     }
-        // if (get_square_value(pos) == SquareType::Dots || get_square_value(pos) == SquareType::Empty || get_square_value(pos) == SquareType::Treasure)
-        // {
-        //     SetSquareValue(pos, get_square_value(p->get_position()));
-        //     SetSquareValue(p->get_position(), get_square_value(p->get_position()));
-        //     p->SetPosition(pos);
-        //     return true;
-        // }
-        else
-        {
-            return false;
-        }
 }
 
 /**
@@ -263,7 +307,7 @@ bool Board::MoveEnemy(Player *p, Position pos)
     @param p Player pointer
     @return void
 */
-void Board::prettyPrint(Player *p)
+void Board::PrettyPrint(Player *p)
 {
     for (int i = 0; i < 10; i++)
     {
@@ -273,28 +317,34 @@ void Board::prettyPrint(Player *p)
         }
         std::cout << std::endl;
     }
-    std::cout << "Points: " << p->get_points() << '\n'
-              << '\n';
+    std::cout << "Points: " << p->get_points() << '\n';
+    std::cout << "Treasure(s): " << p->get_treasure_count() << '\n';
 }
 
+/**
+    Prints game specific information to the console in a readable format
+    @return void
+*/
 void Game::PrettyPrint()
 {
-    board_->prettyPrint(players_[0]);
+    board_->PrettyPrint(players_[0]);
+    std::cout << "Turns: " << turn_count_ << '\n' << '\n';
 }
 
 Game::Game() {}
 
 void Game::NewGame(Player *human, std::vector<Player *> enemylist, const int enemies)
 {
+    turn_count_ = 0;
     board_ = new Board();
     players_.push_back(human);
     for (long int i = 0; i < enemies; i++)
     {
         players_.push_back(enemylist[i]);
     }
-    players_[0]->SetPosition({0, 0});
-    players_[1]->SetPosition({7, 4});
-    players_[2]->SetPosition({4, 5});
+    players_[0]->set_position({0, 0});
+    players_[1]->set_position({7, 4});
+    players_[2]->set_position({4, 5});
 
     PrettyPrint();
 
@@ -308,7 +358,7 @@ void Game::NewGame(Player *human, std::vector<Player *> enemylist, const int ene
 }
 void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
 {
-    //print valid moves relative to player
+    turn_count_ += 1;
     std::vector<Position> moves = board_->GetMoves(p);
     std::cout << "Valid moves: ";
     for (long unsigned int i = 0; i < moves.size(); i++)
@@ -340,11 +390,10 @@ void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
     }
     else
     {
+        turn_count_ -= 1;
         std::cout << "Invalid move.\n";
         return;
     }
-
-    // move player to move
     if (board_->MovePlayer(p, move, enemylist))
     {
         return;
@@ -352,33 +401,17 @@ void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
     else
     {
         std::cout << "Invalid move.\n";
+        turn_count_-=1;
         return;
     }
 }
 
 void Game::TakeTurnEnemy(Player *p)
 {
-    // get enemy moves
     std::vector<Position> moves = board_->GetMoves(p);
-    //print valid moves relative to player
-    std::cout << "Valid moves: ";
-    for (long unsigned int i = 0; i < moves.size(); i++)
-    {
-        std::cout << players_[0]->ToRelativePosition(moves[i]) << " ";
-    }
-    // get random valid move
-    int rand_move = rand() % moves.size();
-    Position move = moves[rand_move];
-    // move enemy to move
-    if (board_->MoveEnemy(p, move))
-    {
-        return;
-    }
-    else
-    {
-        std::cout << "Invalid move.\n";
-        return;
-    }
+    int random = rand() % moves.size();
+    Position move = moves[random];
+    board_->MoveEnemy(p, move);
 }
 
 bool Game::IsGameOver(Player *p)

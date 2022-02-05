@@ -6,29 +6,36 @@ Player::Player(const std::string name, const bool is_human)
     name_ = name;
     is_human_ = is_human;
     points_ = 0;
-    has_Treasure_ = false;
-    isDead_ = false;
+    has_treasure_ = false;
+    treasure_count_ = 0;
+    is_dead_ = false;
+    prev_move_type_ = 'Dots';
 }
 
-void Player::ChangePoints(const int x)
+void Player::change_points(const int x)
 {
     points_ += x;
 }
 
-void Player::SetPosition(Position pos)
+void Player::set_prev_move_type(char sq)
+{
+    prev_move_type_ = sq;
+}
+void Player::set_position(Position pos)
 {
     pos_ = pos;
 }
 
-void Player::SetHasTreasure(bool hastreasure)
+void Player::set_has_treasure(bool hastreasure)
 {
-    has_Treasure_ = hastreasure;
+    has_treasure_ = hastreasure;
 }
 
-void Player::SetIsDead(bool isdead)
+void Player::set_is_dead(bool isdead)
 {
-    isDead_ = isdead;
+    is_dead_ = isdead;
 }
+
 
 std::string Player::ToRelativePosition(Position other)
 {
@@ -52,6 +59,11 @@ std::string Player::ToRelativePosition(Position other)
     {
         return "";
     }
+}
+
+void Player::set_treasure_count(int count)
+{
+    treasure_count_ = count;
 }
 
 std::string Player::Stringify()
