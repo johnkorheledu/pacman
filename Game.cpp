@@ -72,7 +72,9 @@ SquareType GetSquareType(char c)
     @return Board object
 */
 Board::Board()
-{
+{   
+    rows_ = get_rows();
+    cols_ = get_cols();
     // Set initial position for two enemies
     SetSquareValue({7, 4}, SquareType::Enemies);
     SetSquareValue({4, 5}, SquareType::Enemies);
@@ -422,6 +424,8 @@ Game::Game()
     turn_count_ = 0;
     board_ = new Board();
     dots_count_ = get_dots_count(board_);
+    treasures_count_ = get_treasures_count(board_);
+    game_over_ = false;
 }
 
 /**
