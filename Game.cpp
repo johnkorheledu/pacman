@@ -1,7 +1,7 @@
 #include "Game.h"
 #include <string>
 #include <iostream>
-
+#include <algorithm>
 /**
     Returns the symbol associated with a given SquareType sq
 
@@ -17,7 +17,7 @@ std::string SquareTypeStringify(SquareType sq)
     case SquareType::Dots:
         return ".";
     case SquareType::Pacman:
-        return "p";
+        return "<";
     case SquareType::Treasure:
         return "t";
     case SquareType::Enemies:
@@ -25,7 +25,7 @@ std::string SquareTypeStringify(SquareType sq)
     case SquareType::Empty:
         return "_";
     case SquareType::PowerfulPacman:
-        return "x";
+        return "p";
     case SquareType::Trap:
         return "*";
     case SquareType::EnemySpecialTreasure:
@@ -49,7 +49,7 @@ SquareType GetSquareType(char c)
         return SquareType::Wall;
     case '.':
         return SquareType::Dots;
-    case 'p':
+    case '<':
         return SquareType::Pacman;
     case 't':
         return SquareType::Treasure;
@@ -57,7 +57,7 @@ SquareType GetSquareType(char c)
         return SquareType::Enemies;
     case '_':
         return SquareType::Empty;
-    case 'x':
+    case 'p':
         return SquareType::PowerfulPacman;
     case '*':
         return SquareType::Trap;
@@ -179,24 +179,23 @@ std::vector<Position> Board::GetMoves(Player *p)
 {
     if (p->is_human())
     {
+        // print current position of player
+        std::cout << "Current Position: " << p->get_position().row << " " << p->get_position().col << std::endl;
         std::vector<Position> moves;
         Position pos = p->get_position();
-        // left
+        // down
         if (pos.row > 0 && get_square_value({pos.row - 1, pos.col}) != SquareType::Wall)
         {
             moves.push_back({pos.row - 1, pos.col});
         }
-        // right
         if (pos.row < get_rows() - 1 && get_square_value({pos.row + 1, pos.col}) != SquareType::Wall)
         {
             moves.push_back({pos.row + 1, pos.col});
         }
-        // up
         if (pos.col > 0 && get_square_value({pos.row, pos.col - 1}) != SquareType::Wall)
         {
-            moves.push_back({pos.row, pos.col - 1});
+            moves.push_back({pos.row, pos.col - 1}); 
         }
-        // down
         if (pos.col < get_cols() - 1 && get_square_value({pos.row, pos.col + 1}) != SquareType::Wall)
         {
             moves.push_back({pos.row, pos.col + 1});
@@ -525,7 +524,6 @@ void Game::NewGame(Player *human, std::vector<Player *> enemylist, const int ene
                 TakeTurnEnemy(enemylist[i]);
             }
         }
-
         PrettyPrint();
     }
     std::cout << "Game Over!\n";
@@ -544,28 +542,30 @@ void Game::TakeTurn(Player *p, std::vector<Player *> enemylist)
     turn_count_ += 1;
     std::vector<Position> moves = board_->GetMoves(p);
     std::cout << "Valid moves: ";
+    std::vector<std::string> relative_moves;
     for (long unsigned int i = 0; i < moves.size(); i++)
     {
         std::cout << players_[0]->ToRelativePosition(moves[i]) << " ";
+        relative_moves.push_back(players_[0]->ToRelativePosition(moves[i]));
     }
     std::cout << '\n';
     std::string input;
     std::cout << "Enter move: ";
     std::cin >> input;
     Position move;
-    if (input == "up")
+    if (input == "up" && std::find(relative_moves.begin(), relative_moves.end(), "UP") != relative_moves.end())
     {
         move = {p->get_position().row - 1, p->get_position().col};
     }
-    else if (input == "right")
+    else if (input == "right" && std::find(relative_moves.begin(), relative_moves.end(), "RIGHT") != relative_moves.end())
     {
         move = {p->get_position().row, p->get_position().col + 1};
     }
-    else if (input == "down")
+    else if (input == "down" && std::find(relative_moves.begin(), relative_moves.end(), "DOWN") != relative_moves.end())
     {
         move = {p->get_position().row + 1, p->get_position().col};
     }
-    else if (input == "left")
+    else if (input == "left" && std::find(relative_moves.begin(), relative_moves.end(), "LEFT") != relative_moves.end())
     {
         move = {p->get_position().row, p->get_position().col - 1};
     }
