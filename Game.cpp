@@ -19,7 +19,7 @@ std::string SquareTypeStringify(SquareType sq)
     case SquareType::Pacman:
         return "p";
     case SquareType::Treasure:
-        return "T";
+        return "t";
     case SquareType::Enemies:
         return "e";
     case SquareType::Empty:
@@ -27,7 +27,7 @@ std::string SquareTypeStringify(SquareType sq)
     case SquareType::PowerfulPacman:
         return "x";
     case SquareType::Trap:
-        return "Trap";
+        return "*";
     case SquareType::EnemySpecialTreasure:
         return "EnemySpecialTreasure";
     default:
@@ -51,7 +51,7 @@ SquareType GetSquareType(char c)
         return SquareType::Dots;
     case 'p':
         return SquareType::Pacman;
-    case 'T':
+    case 't':
         return SquareType::Treasure;
     case 'e':
         return SquareType::Enemies;
@@ -59,6 +59,8 @@ SquareType GetSquareType(char c)
         return SquareType::Empty;
     case 'x':
         return SquareType::PowerfulPacman;
+    case '*':
+        return SquareType::Trap;
     default:
         return SquareType::Empty;
     }
@@ -288,7 +290,7 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
     {
         if (p->has_treasure())
         {
-            for (int i = 0; i < enemylist.size(); i++)
+            for (long unsigned int i = 0; i < enemylist.size(); i++)
             {
                 if (enemylist[i]->get_position() == pos)
                 {
@@ -367,6 +369,7 @@ bool Board::MoveEnemy(Player *p, Position pos)
         p->set_position(pos);
         return true;
     }
+    return false;
 }
 
 /**
