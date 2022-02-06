@@ -24,6 +24,7 @@ public:
 	bool has_treasure() const { return has_treasure_; }
 	int get_treasure_count() const { return treasure_count_; }
 	bool is_dead() const { return is_dead_; }
+	int get_lives() const { return lives_; }
 
 	void change_points(const int x);
 	void set_position(Position pos);
@@ -31,6 +32,7 @@ public:
 	void set_is_dead(bool isdead);
 	void set_treasure_count(int count);
 	void set_enemy_prev_type(char type);
+	void set_lives(int lives);
 
 	std::string ToRelativePosition(Position other);
 	std::string Stringify();
@@ -44,6 +46,7 @@ private:
 	bool is_dead_;
 	int treasure_count_;
 	char enemy_prev_type_;
+	int lives_;
 };
 
 #endif // _PLAYER_H_

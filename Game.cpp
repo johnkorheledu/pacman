@@ -92,12 +92,12 @@ Board::Board()
     // Set initial position for Pacman
     SetSquareValue({0, 0}, SquareType::Pacman);
     // Setup basic layout of board. Walls, and two static treasures
-    SetSquareValue({0, 4}, SquareType::Wall);
-    SetSquareValue({0, 5}, SquareType::Wall);
+    SetSquareValue({0, 4}, SquareType::Trap);
+    SetSquareValue({0, 5}, SquareType::Trap);
     SetSquareValue({0, 6}, SquareType::Wall);
-    SetSquareValue({0, 7}, SquareType::Wall);
+    SetSquareValue({0, 7}, SquareType::Trap);
     SetSquareValue({0, 8}, SquareType::Wall);
-    SetSquareValue({1, 2}, SquareType::Wall);
+    SetSquareValue({1, 2}, SquareType::Trap);
     SetSquareValue({1, 3}, SquareType::Wall);
     SetSquareValue({1, 5}, SquareType::Wall);
     SetSquareValue({1, 8}, SquareType::Wall);
@@ -107,11 +107,11 @@ Board::Board()
     SetSquareValue({3, 3}, SquareType::Treasure);
     SetSquareValue({3, 5}, SquareType::Wall);
     SetSquareValue({3, 6}, SquareType::Wall);
-    SetSquareValue({3, 8}, SquareType::Wall);
+    SetSquareValue({3, 8}, SquareType::Trap);
     SetSquareValue({4, 1}, SquareType::Wall);
     SetSquareValue({4, 2}, SquareType::Wall);
     SetSquareValue({5, 1}, SquareType::Wall);
-    SetSquareValue({5, 2}, SquareType::Wall);
+    SetSquareValue({5, 2}, SquareType::Trap);
     SetSquareValue({5, 3}, SquareType::Wall);
     SetSquareValue({5, 4}, SquareType::Wall);
     SetSquareValue({7, 5}, SquareType::Wall);
@@ -194,7 +194,7 @@ std::vector<Position> Board::GetMoves(Player *p)
         }
         if (pos.col > 0 && get_square_value({pos.row, pos.col - 1}) != SquareType::Wall)
         {
-            moves.push_back({pos.row, pos.col - 1}); 
+            moves.push_back({pos.row, pos.col - 1});
         }
         if (pos.col < get_cols() - 1 && get_square_value({pos.row, pos.col + 1}) != SquareType::Wall)
         {
@@ -266,6 +266,15 @@ bool Board::MovePlayer(Player *p, Position pos, std::vector<Player *> enemylist)
         SetSquareValue(p->get_position(), SquareType::Empty);
         p->set_position(pos);
         p->change_points(1);
+        return true;
+    }
+    else if (get_square_value(pos) == SquareType::Trap)
+    {
+        SetSquareValue(pos, get_square_value(p->get_position()));
+        SetSquareValue(p->get_position(), SquareType::Empty);
+        p->set_position(pos);
+        p->change_points(-10);
+        p->set_lives(p->get_lives() - 1);
         return true;
     }
     else if (get_square_value(pos) == SquareType::Empty)
@@ -612,5 +621,5 @@ void Game::TakeTurnEnemy(Player *p)
 */
 bool Game::IsGameOver(Player *p)
 {
-    return p->is_dead() || (CheckIfDotsOver() && CheckIfTreasuresOver());
+    return p->is_dead() || (CheckIfDotsOver() && CheckIfTreasuresOver()) || p->get_lives() == 0;
 }

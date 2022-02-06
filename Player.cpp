@@ -18,6 +18,25 @@ Player::Player(const std::string name, const bool is_human)
     is_dead_ = false;
     enemy_prev_type_ = '.';
     treasure_count_ = 0;
+    if (is_human_)
+    {
+        lives_ = 3;
+    }
+    else
+    {
+        lives_ = 1;
+    }
+}
+
+/**
+    Sets the player's lives
+
+    @param lives The number of lives to set
+    @return void
+*/
+void Player::set_lives(int lives)
+{
+    lives_ = lives;
 }
 
 /**
@@ -45,12 +64,17 @@ void Player::set_enemy_prev_type(char type)
 /**
     Displays useful information about the player
 
-    @return A string representation of points and treasure count
+    @return A string representation of points, treasure count, lives, and player name.
 */
 std::string Player::Stringify()
 {
-    std::string s = name_ + ": " + std::to_string(points_) + " points, " + std::to_string(treasure_count_) + " treasures";
-    return s;
+    // get players points, treasure count, and lives
+    std::string str = "";
+    str += "Player: " + name_ + "\n";
+    str += "Points: " + std::to_string(points_) + "\n";
+    str += "Treasure Count: " + std::to_string(treasure_count_) + "\n";
+    str += "Lives: " + std::to_string(lives_);
+    return str;
 }
 
 /**
